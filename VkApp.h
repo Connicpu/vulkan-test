@@ -18,6 +18,13 @@ struct SwapChainBuffer
     vk::ImageView view;
 };
 
+struct DepthStencilBuffer
+{
+    vk::Image image;
+    vk::ImageView view;
+    vk::DeviceMemory mem;
+};
+
 class VkApp
 {
 public:
@@ -33,9 +40,21 @@ private:
     void InitWindow();
     void InitCommandPool();
     void InitSwapChain();
+    void InitCommandBuffers();
+    void InitDepthStencil();
+    void InitRenderPass();
+    void InitPipelineCache();
+    void InitFrameBuffer();
+
+    // Free helpers
+    void FreeCommandBuffers();
+    void FreeDepthStencil();
+    void FreeFramebuffers();
 
     // Helpers
-    size_t FindQueue();
+    uint32_t FindQueue();
+    vk::Format GetDepthFormat();
+    uint32_t GetMemoryType(uint32_t typeBits, vk::MemoryPropertyFlags flags);
     void SetImageLayout(
         vk::CommandBuffer commandBuffer,
         vk::Image image,
@@ -54,14 +73,21 @@ private:
     vk::SurfaceKHR surface;
     vk::Format colorFormat;
     vk::ColorSpaceKHR colorSpace;
+    vk::Format depthFormat;
+    uint32_t queueIndex;
 
     vk::CommandPool commandPool;
-    vk::CommandBuffer setupCmd;
+    vk::CommandBuffer setupCmdBuffer;
+    vk::CommandBuffer prePresentCmdBuffer;
+    vk::CommandBuffer postPresentCmdBuffer;
+    std::vector<vk::CommandBuffer> drawCmdBuffers;
+    vk::PipelineCache pipelineCache;
 
     vk::SwapchainKHR swapChain;
-    std::vector<vk::Image> images;
-    std::vector<SwapChainBuffer> buffers;
-    size_t nodeIndex;
+    std::vector<SwapChainBuffer> swapBuffers;
+    DepthStencilBuffer depthStencil;
+    vk::RenderPass renderPass;
+    std::vector<vk::Framebuffer> frameBuffers;
 
     int32_t clientWidth, clientHeight;
 };

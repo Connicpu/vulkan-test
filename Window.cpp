@@ -42,6 +42,11 @@ bool Window::Closed()
     return closed;
 }
 
+void Window::SetHandler(UINT msg, std::function<WndCallback> &&callback)
+{
+    callbacks.emplace(msg, std::move(callback));
+}
+
 LRESULT WINAPI Window::WinProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg)
@@ -62,6 +67,18 @@ LRESULT WINAPI Window::WinProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         }
 
         default:
+        {
+            auto window = (Window *)GetWindowLongPtrW(hwnd, GWLP_USERDATA);
+            if (window)
+            {
+                auto cb = window->callbacks.find(msg);
+                if (cb != window->callbacks.end())
+                {
+                    return cb->second(hwnd, msg, wp, lp);
+                }
+            }
+
             return DefWindowProcW(hwnd, msg, wp, lp);
+        }
     }
 }
