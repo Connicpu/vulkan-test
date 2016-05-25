@@ -5,10 +5,11 @@
 class Window
 {
 public:
-    Window(HINSTANCE hinst);
+    Window();
     ~Window();
 
     HWND GetHandle();
+    HINSTANCE GetHInst();
     bool Closed();
 
 private:

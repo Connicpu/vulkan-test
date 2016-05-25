@@ -1,12 +1,12 @@
 #include "Window.h"
 
-#define WINDOW_CLASS (L"CnnrsVulkanRenderer")
+#define WINDOW_CLASS (L"CnnrsVulkanRendererWindow")
 
-static LRESULT WINAPI WinProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
-
-Window::Window(HINSTANCE hinst)
-    : hinst(hinst), closed(false)
+Window::Window()
+    : closed(false)
 {
+    hinst = (HINSTANCE)GetModuleHandleW(nullptr);
+
     WNDCLASSEXW wndc = { sizeof(wndc) };
     wndc.lpszClassName = WINDOW_CLASS;
     wndc.cbWndExtra = sizeof(Window *);
@@ -30,6 +30,11 @@ Window::~Window()
 HWND Window::GetHandle()
 {
     return hwnd;
+}
+
+HINSTANCE Window::GetHInst()
+{
+    return hinst;
 }
 
 bool Window::Closed()
